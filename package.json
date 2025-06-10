@@ -1,0 +1,58 @@
+{
+	"author": {
+		"name": "Baptiste Pillot",
+		"email": "baptiste@pillot.fr"
+	},
+	"dependencies": {
+		"@itrocks/table-schema": "latest"
+	},
+	"description": "Compares two table schemas and returns their differences as a structured object",
+	"devDependencies": {
+		"typescript": "~5.8"
+	},
+	"engines": {
+		"node": ">=18"
+	},
+	"exports": {
+		"import": "./esm/table-schema-diff.js",
+		"require": "./cjs/table-schema-diff.js"
+	},
+	"files": [
+		"LICENSE",
+		"README.md",
+		"*/*.d.ts",
+		"*/*.js"
+	],
+	"homepage": "https://it.rocks",
+	"keywords": [
+		"backend",
+		"column",
+		"compare",
+		"comparison",
+		"constraint",
+		"database",
+		"diff",
+		"difference",
+		"foreign",
+		"index",
+		"it.rocks",
+		"RDB",
+		"relational",
+		"schema",
+		"structure",
+		"table"
+	],
+	"license": "LGPL-3.0-or-later",
+	"name": "@itrocks/table-schema-diff",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/itrocks-ts/table-schema-diff.git"
+	},
+	"scripts": {
+		"build": "npm run build:cjs && npm run build:esm",
+		"build:cjs": "tsc -p tsconfig.cjs.json",
+		"build:esm": "tsc -p tsconfig.esm.json"
+	},
+	"types": "./esm/table-schema-diff.d.ts",
+	"version": "0.0.1"
+}
