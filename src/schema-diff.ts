@@ -1,7 +1,7 @@
-import { Column } from '@itrocks/table-schema'
-import { Table }  from '@itrocks/table-schema'
+import { Column } from '@itrocks/schema'
+import { Table }  from '@itrocks/schema'
 
-export class TableSchemaDiff
+export class TableDiff
 {
 	additions = new Array<Column>()
 	changes   = new Array<{ source: Column, target: Column }>()

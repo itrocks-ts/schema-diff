@@ -4,7 +4,7 @@
 		"email": "baptiste@pillot.fr"
 	},
 	"dependencies": {
-		"@itrocks/table-schema": "latest"
+		"@itrocks/schema": "latest"
 	},
 	"description": "Compares two table schemas and returns their differences as a structured object",
 	"devDependencies": {
@@ -14,8 +14,8 @@
 		"node": ">=18"
 	},
 	"exports": {
-		"import": "./esm/table-schema-diff.js",
-		"require": "./cjs/table-schema-diff.js"
+		"import": "./esm/schema-diff.js",
+		"require": "./cjs/schema-diff.js"
 	},
 	"files": [
 		"LICENSE",
@@ -43,16 +43,16 @@
 		"table"
 	],
 	"license": "LGPL-3.0-or-later",
-	"name": "@itrocks/table-schema-diff",
+	"name": "@itrocks/schema-diff",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/itrocks-ts/table-schema-diff.git"
+		"url": "git+https://github.com/itrocks-ts/schema-diff.git"
 	},
 	"scripts": {
 		"build": "npm run build:cjs && npm run build:esm",
 		"build:cjs": "tsc -p tsconfig.cjs.json",
 		"build:esm": "tsc -p tsconfig.esm.json"
 	},
-	"types": "./esm/table-schema-diff.d.ts",
-	"version": "0.0.1"
+	"types": "./esm/schema-diff.d.ts",
+	"version": "0.0.2"
 }
