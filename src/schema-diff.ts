@@ -1,6 +1,8 @@
 import { Column } from '@itrocks/schema'
 import { Table }  from '@itrocks/schema'
 
+type TableChange = { collation: boolean, engine: boolean, name: boolean }
+
 export class TableDiff
 {
 	additions = new Array<Column>()
@@ -48,20 +50,33 @@ export class TableDiff
 	columnChanges(source: Column, target: Column): boolean
 	{
 		if (
-			source.autoIncrement !== target.autoIncrement
-			|| source.canBeNull !== target.canBeNull
+			source.autoIncrement          !== target.autoIncrement
+			|| source.canBeNull           !== target.canBeNull
 			|| source.default?.toString() !== target.default?.toString()
 		) {
 			return true
 		}
 		const sourceType = source.type
 		const targetType = target.type
-		return sourceType.length       !== targetType.length
+		return sourceType.collate      !== targetType.collate
+			|| sourceType.length         !== targetType.length
 			|| sourceType.name           !== targetType.name
 			|| sourceType.precision      !== targetType.precision
 			|| sourceType.signed         !== targetType.signed
 			|| sourceType.variableLength !== targetType.variableLength
 			|| sourceType.zeroFill       !== targetType.zeroFill
+	}
+
+	tableChanges(): TableChange | false
+	{
+		const source = this.source
+		const target = this.target
+		const change: TableChange = {
+			collation: source.collation !== target.collation,
+			engine:    source.engine    !== target.engine,
+			name:      source.name      !== target.name
+		}
+		return (change.collation || change.engine || change.name) ? change : false
 	}
 
 }
