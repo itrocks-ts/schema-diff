@@ -1,20 +1,24 @@
-import { Column } from '@itrocks/schema'
-import { Table }  from '@itrocks/schema'
+import { Column }   from '@itrocks/schema'
+import { Index }    from '@itrocks/schema'
+import { IndexKey } from '@itrocks/schema'
+import { Table }    from '@itrocks/schema'
 
+type SchemaElement = Column | Index
+type SchemaElementPair = { source: Column, target: Column } | { source: Index, target: Index }
 type TableChange = { collation: boolean, engine: boolean, name: boolean }
 
 export class TableDiff
 {
-	additions = new Array<Column>()
-	changes   = new Array<{ source: Column, target: Column }>()
-	deletions = new Array<Column>()
-	unchanged = new Array<Column>()
+	additions = new Array<SchemaElement>()
+	changes   = new Array<SchemaElementPair>()
+	deletions = new Array<SchemaElement>()
+	unchanged = new Array<SchemaElement>()
 
 	constructor(
 		public source: Table,
 		public target: Table
 	) {
-		const keepColumns:   Record<string, true> = {}
+		const keepColumns:   Record<string, true>   = {}
 		const sourceColumns: Record<string, Column> = {}
 
 		for (const sourceColumn of source.columns) {
@@ -45,6 +49,33 @@ export class TableDiff
 			if (keepColumns[sourceColumn.name]) continue
 			this.deletions.push(sourceColumn)
 		}
+
+		const keepIndexes:   Record<string, true>   = {}
+		const sourceIndexes: Record<string, Index>  = {}
+
+		for (const sourceIndex of source.indexes) {
+			sourceIndexes[sourceIndex.name] = sourceIndex
+		}
+
+		for (const targetIndex of target.indexes) {
+			let sourceIndex: Index | undefined = sourceIndexes[targetIndex.name]
+			if (sourceIndex) {
+				keepIndexes[sourceIndex.name] = true
+				if (this.indexChanges(sourceIndex, targetIndex)) {
+					this.changes.push({ source: sourceIndex, target: targetIndex })
+				}
+				else {
+					this.unchanged.push(targetIndex)
+				}
+				continue
+			}
+			this.additions.push(targetIndex)
+		}
+
+		for (const sourceIndex of source.indexes) {
+			if (keepIndexes[sourceIndex.name]) continue
+			this.deletions.push(sourceIndex)
+		}
 	}
 
 	columnChanges(source: Column, target: Column): boolean
@@ -65,6 +96,33 @@ export class TableDiff
 			|| sourceType.signed         !== targetType.signed
 			|| sourceType.variableLength !== targetType.variableLength
 			|| sourceType.zeroFill       !== targetType.zeroFill
+	}
+
+	indexChanges(source: Index, target: Index): boolean
+	{
+		if (
+			source.name !== target.name
+			|| source.keys.length !== target.keys.length
+		) {
+			return true
+		}
+		const sourceKeys: Record<string, IndexKey> = {}
+		const targetKeys: Record<string, IndexKey> = {}
+		for (const sourceKey of source.keys) {
+			sourceKeys[sourceKey.columnName] = sourceKey
+		}
+		for (const targetKey of target.keys) {
+			targetKeys[targetKey.columnName] = targetKey
+			if ((sourceKeys[targetKey.columnName]?.length ?? 'None') !== targetKey.length) {
+				return true
+			}
+		}
+		for (const sourceKey of source.keys) {
+			if (!targetKeys[sourceKey.columnName]) {
+				return true
+			}
+		}
+		return false
 	}
 
 	tableChanges(): TableChange | false
