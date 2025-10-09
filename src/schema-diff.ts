@@ -32,17 +32,17 @@ export class TableDiff
 					if (sourceColumn ||= sourceColumns[formerName]) break
 				}
 			}
-			if (sourceColumn) {
-				keepColumns[sourceColumn.name] = true
-				if (this.columnChanges(sourceColumn, targetColumn)) {
-					this.changes.push({ source: sourceColumn, target: targetColumn })
-				}
-				else {
-					this.unchanged.push(targetColumn)
-				}
+			if (!sourceColumn) {
+				this.additions.push(targetColumn)
 				continue
 			}
-			this.additions.push(targetColumn)
+			keepColumns[sourceColumn.name] = true
+			if (this.columnChanges(sourceColumn, targetColumn)) {
+				this.changes.push({ source: sourceColumn, target: targetColumn })
+			}
+			else {
+				this.unchanged.push(targetColumn)
+			}
 		}
 
 		for (const sourceColumn of source.columns) {
@@ -81,7 +81,8 @@ export class TableDiff
 	columnChanges(source: Column, target: Column): boolean
 	{
 		if (
-			source.autoIncrement          !== target.autoIncrement
+			source.name                   !== target.name
+			|| source.autoIncrement       !== target.autoIncrement
 			|| source.canBeNull           !== target.canBeNull
 			|| source.default?.toString() !== target.default?.toString()
 		) {
@@ -113,7 +114,7 @@ export class TableDiff
 		}
 		for (const targetKey of target.keys) {
 			targetKeys[targetKey.columnName] = targetKey
-			if ((sourceKeys[targetKey.columnName]?.length ?? 'None') !== targetKey.length) {
+			if (sourceKeys[targetKey.columnName]?.length !== targetKey.length) {
 				return true
 			}
 		}
