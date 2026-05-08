@@ -8,20 +8,17 @@
 	},
 	"description": "Compares two table schemas and returns their differences as a structured object",
 	"devDependencies": {
-		"typescript": "~5.9"
+		"typescript": "^6.0"
 	},
 	"engines": {
-		"node": ">=18"
+		"node": ">=24"
 	},
-	"exports": {
-		"import": "./esm/schema-diff.js",
-		"require": "./cjs/schema-diff.js"
-	},
+	"exports": "./cjs/schema-diff.js",
 	"files": [
 		"LICENSE",
 		"README.md",
-		"*/*.d.ts",
-		"*/*.js"
+		"cjs",
+		"!*.map"
 	],
 	"homepage": "https://it.rocks",
 	"keywords": [
@@ -54,10 +51,7 @@
 		"url": "git+https://github.com/itrocks-ts/schema-diff.git"
 	},
 	"scripts": {
-		"build": "npm run build:cjs && npm run build:esm",
-		"build:cjs": "tsc -p tsconfig.cjs.json",
-		"build:esm": "tsc -p tsconfig.esm.json"
+		"build": "tsc"
 	},
-	"types": "./esm/schema-diff.d.ts",
-	"version": "0.0.7"
+	"version": "0.1.0"
 }
