@@ -190,9 +190,11 @@ Returns `true` if two `Index` definitions are considered different. The
 comparison takes into account:
 
 - index name;
+- index type;
+- unique flag;
 - number of keys;
-- set of key column names;
-- key lengths (per column).
+- ordered key column names;
+- key lengths at each position.
 
 Again, this is mainly an internal helper, but it can be useful if you
 need a standalone index comparison function.

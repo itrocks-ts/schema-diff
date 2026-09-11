@@ -1,6 +1,5 @@
 import { Column }   from '@itrocks/schema'
 import { Index }    from '@itrocks/schema'
-import { IndexKey } from '@itrocks/schema'
 import { Table }    from '@itrocks/schema'
 
 type SchemaElement = Column | Index
@@ -102,24 +101,20 @@ export class TableDiff
 	indexChanges(source: Index, target: Index): boolean
 	{
 		if (
-			source.name !== target.name
-			|| source.keys.length !== target.keys.length
+			source.keys.length !== target.keys.length
+			|| source.name     !== target.name
+			|| source.type     !== target.type
+			|| source.unique   !== target.unique
 		) {
 			return true
 		}
-		const sourceKeys: Record<string, IndexKey> = {}
-		const targetKeys: Record<string, IndexKey> = {}
-		for (const sourceKey of source.keys) {
-			sourceKeys[sourceKey.columnName] = sourceKey
-		}
-		for (const targetKey of target.keys) {
-			targetKeys[targetKey.columnName] = targetKey
-			if (sourceKeys[targetKey.columnName]?.length !== targetKey.length) {
-				return true
-			}
-		}
-		for (const sourceKey of source.keys) {
-			if (!targetKeys[sourceKey.columnName]) {
+		for (let position = 0; position < source.keys.length; position++) {
+			const sourceKey = source.keys[position]
+			const targetKey = target.keys[position]
+			if (
+				sourceKey.columnName !== targetKey.columnName
+				|| sourceKey.length !== targetKey.length
+			) {
 				return true
 			}
 		}
